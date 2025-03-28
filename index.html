@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>ToDo</h1>
+
+    <div class="input-container">
+        <input type="text" id="taskInput" placeholder="Enter Task Name">
+        <button id="addTaskBtn">Add</button>
+        <span id="spanMessage" class="span" ></span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Done</th>
+                <th>Task</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="taskTable"></tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
