@@ -3,6 +3,7 @@ window.addEventListener("load", function() {
     var addTaskBtn = document.getElementById("addTaskBtn");
     var taskTable = document.getElementById("taskTable");
     var SpanMessage = document.getElementById("spanMessage");
+    let todoes=[];
 
     addTaskBtn.addEventListener("click", function() {
             //check the value of taskinput
@@ -14,6 +15,8 @@ window.addEventListener("load", function() {
             return;// to not complete the coed & not add the empty task
         }else{
             // to hide the error message if the message had acontent 
+            todoes.push(taskText);
+            localStorage.setItem("todoes",JSON.stringify(todoes));
             SpanMessage.style.display="none";
         }
 
