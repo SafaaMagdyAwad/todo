@@ -57,3 +57,11 @@ td {
     width: 60%;
     display: none;
 }
+.done{
+    text-decoration: line-through; 
+    color: gray;
+}
+.active{
+    text-decoration: none; 
+    color: black;
+}
