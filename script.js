@@ -21,6 +21,7 @@ window.addEventListener("load", function () {
                 "taskText": taskText,
                 "done": false,
             });
+            alert("the TODO was added successfully! ");
             localStorage.setItem("todoes", JSON.stringify(todoes));
             SpanMessage.style.display = "none";
             taskInput.value = "";
@@ -75,12 +76,12 @@ window.addEventListener("load", function () {
             deleteBtn.style = "background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;"
             deleteBtn.addEventListener("click", function () {
                 // delete the compelete row
-                todoes = removeElement(todoes, todo);
-                localStorage.setItem("todoes", JSON.stringify(todoes));
-
-                console.log(todoes);
-
-                taskTable.removeChild(row);
+                let deletetodo=confirm(`are you sure you want to delete ${todo["taskText"]} `);
+                if(deletetodo){
+                    todoes = removeElement(todoes, todo);
+                    localStorage.setItem("todoes", JSON.stringify(todoes));    
+                    taskTable.removeChild(row);
+                }
             });
             deleteCell.appendChild(deleteBtn);
 
