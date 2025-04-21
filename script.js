@@ -23,12 +23,13 @@ window.addEventListener("load", function () {
             });
             localStorage.setItem("todoes", JSON.stringify(todoes));
             SpanMessage.style.display = "none";
+            taskInput.value = "";
         }
         showTodoes();
     });
 
     function showTodoes() {
-        taskTable.innerHTML="";
+        taskTable.innerHTML = "";
         todoes.forEach(todo => {
             //starting creating elements
             //table row
@@ -53,10 +54,14 @@ window.addEventListener("load", function () {
                     // the task is done                
                     todo["done"] = true;
                     taskTextCell.className = "done";//will style the text to be line througth
+                    localStorage.setItem("todoes", JSON.stringify(todoes));
+
                 } else {
                     //the task is not
                     todo["done"] = false;
                     taskTextCell.className = "active";//will style the text to be normal
+                    localStorage.setItem("todoes", JSON.stringify(todoes));
+
                 }
             });
             doneCell.appendChild(doneBox);   //  done   ?   ?
@@ -70,11 +75,11 @@ window.addEventListener("load", function () {
             deleteBtn.style = "background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;"
             deleteBtn.addEventListener("click", function () {
                 // delete the compelete row
-                todoes=removeElement(todoes,todo);
+                todoes = removeElement(todoes, todo);
                 localStorage.setItem("todoes", JSON.stringify(todoes));
 
                 console.log(todoes);
-                
+
                 taskTable.removeChild(row);
             });
             deleteCell.appendChild(deleteBtn);
