@@ -11,13 +11,13 @@ window.addEventListener("load", function () {
     if ("Notification" in window) {
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
-                statusDiv.innerText = "✅ تم تفعيل الإشعارات.";
+                statusDiv.innerText = "✅ notifications are allowed";
                 statusDiv.style.color = "green";
             } else if (permission === "denied") {
-                statusDiv.innerText = "❌ تم رفض الإشعارات.";
+                statusDiv.innerText = "❌ notifications are blocked";
                 statusDiv.style.color = "red";
             } else {
-                statusDiv.innerText = "ℹ️ لم يتم اتخاذ قرار بشأن الإشعارات.";
+                statusDiv.innerText = "ℹ️ no desition about notifications";
                 statusDiv.style.color = "orange";
             }
 
@@ -30,8 +30,8 @@ window.addEventListener("load", function () {
 
         if (delay > 0 && Notification.permission === "granted") {
             setTimeout(() => {
-                new Notification("📝 تذكير!", {
-                    body: `لا تنسَ: ${taskText}`,
+                new Notification("📝 Reminder!", {
+                    body: `Dont forget : ${todo.taskText}`,
                     icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
                 });
 
@@ -54,8 +54,8 @@ window.addEventListener("load", function () {
                     // إذا الموعد في خلال دقيقة
                     if (diff <= 60000 && diff > 0) {
                         // أرسل إشعار
-                        new Notification("📝 تذكير!", {
-                            body: `لا تنسَ: ${todo.taskText}`,
+                        new Notification("📝 Reminder!", {
+                            body: `Dont forget : ${todo.taskText}`,
                             icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
                         });
 
@@ -105,7 +105,7 @@ window.addEventListener("load", function () {
                     scheduleReminder(taskText, reminderDateTime);
 
                 } else {
-                    alert("⚠️ التاريخ أو الوقت يجب أن يكون في المستقبل!");
+                    alert("⚠️ date ,time must be in the future ");
                 }
 
             }
