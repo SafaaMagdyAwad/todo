@@ -1,26 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <h1>ToDo</h1>
 
+
     <div class="input-container">
-        <input type="text" id="taskInput" placeholder="Enter Task Name">
-        <button id="addTaskBtn">Add</button>
-        <span id="spanMessage" class="span" ></span>
+        <input id="taskInput" type="text" placeholder="Add task " />
+        <input type="date" name="" id="reminderDate">
+        <input type="time" name="" id="reminderTime">
+        <button id="addTaskBtn">Add </button>
+        <span id="spanMessage" class="span"></span>
+        <div id="notificationStatus" class="info-message"></div>
+
     </div>
+
+
 
     <table>
         <thead>
             <tr>
                 <th>Done</th>
                 <th>Task</th>
+                <th>Dead line</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -29,4 +39,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
