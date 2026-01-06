@@ -1,194 +1,144 @@
 window.addEventListener("load", function () {
-    var taskInput = document.getElementById("taskInput");
-    var addTaskBtn = document.getElementById("addTaskBtn");
-    var taskTable = document.getElementById("taskTable");
-    var SpanMessage = document.getElementById("spanMessage");
-    let todoes = JSON.parse(localStorage.getItem("todoes")) || [];
-    let date = document.getElementById("reminderDate");
-    let time = document.getElementById("reminderTime");
-    let statusDiv = document.getElementById("notificationStatus");
+  const taskInput = document.getElementById("taskInput");
+  const addTaskBtn = document.getElementById("addTaskBtn");
+  const taskTable = document.getElementById("taskTable");
+  const SpanMessage = document.getElementById("spanMessage");
+  const date = document.getElementById("reminderDate");
+  const time = document.getElementById("reminderTime");
+  const statusDiv = document.getElementById("notificationStatus");
 
-    if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                statusDiv.innerText = "✅ notifications are allowed";
-                statusDiv.style.color = "green";
-            } else if (permission === "denied") {
-                statusDiv.innerText = "❌ notifications are blocked";
-                statusDiv.style.color = "red";
-            } else {
-                statusDiv.innerText = "ℹ️ no desition about notifications";
-                statusDiv.style.color = "orange";
-            }
+  let todoes = JSON.parse(localStorage.getItem("todoes")) || [];
 
-        });
+  // REQUEST NOTIFICATIONS
+  if ("Notification" in window) {
+    Notification.requestPermission().then(permission => {
+      statusDiv.innerText =
+        permission === "granted"
+          ? "✅ notifications are allowed"
+          : permission === "denied"
+          ? "❌ notifications are blocked"
+          : "ℹ️ no decision about notifications";
+      statusDiv.style.color =
+        permission === "granted"
+          ? "green"
+          : permission === "denied"
+          ? "red"
+          : "orange";
+    });
+  }
+
+  // REGISTER SERVICE WORKER
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error(err));
+  }
+
+  // ADD TASK
+  addTaskBtn.addEventListener("click", function () {
+    const taskText = taskInput.value.trim();
+    if (!taskText) {
+      SpanMessage.innerText = "Task cannot be empty";
+      SpanMessage.style.display = "inline";
+      return;
     }
 
-    function scheduleReminder(taskText, reminderDateTime) {
-        const now = new Date();
-        const delay = reminderDateTime - now;
-
-        if (delay > 0 && Notification.permission === "granted") {
-            setTimeout(() => {
-                new Notification("📝 Reminder!", {
-                    body: `Dont forget : ${todo.taskText}`,
-                    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
-                });
-
-                // تشغيل صوت
-                let audio = new Audio("alarm.wav");
-                audio.play();
-            }, delay);
-        }
+    const reminderDateTime = new Date(`${date.value}T${time.value}`);
+    if (reminderDateTime <= new Date()) {
+      alert("⚠️ Date & time must be in the future");
+      return;
     }
 
-    function checkDeadlinesPeriodically() {
-        setInterval(() => {
-            let now = new Date();
-
-            todoes.forEach(todo => {
-                if (!todo.done && !todo.reminded && todo.date && todo.time) {
-                    let reminderDateTime = new Date(`${todo.date}T${todo.time}`);
-                    let diff = reminderDateTime - now;
-
-                    // إذا الموعد في خلال دقيقة
-                    if (diff <= 60000 && diff > 0) {
-                        // أرسل إشعار
-                        new Notification("📝 Reminder!", {
-                            body: `Dont forget : ${todo.taskText}`,
-                            icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
-                        });
-
-                        let audio = new Audio("alarm.wav");
-                        audio.play();
-
-                        // حدد أن التذكير أُرسل
-                        todo.reminded = true;
-                        localStorage.setItem("todoes", JSON.stringify(todoes));
-                    }
-                }
-            });
-        }, 60000); // كل دقيقة
-    }
-
-
-    addTaskBtn.addEventListener("click", function () {
-        //check the value of taskinput
-        /// validating the imput
-        var taskText = taskInput.value.trim();
-        let id = Math.random();
-        if (taskText === "") {
-
-            SpanMessage.innerText = "Message Can not be null";
-            SpanMessage.style.display = "inline";
-            return;
-        } else {
-            if (date && time) {
-                let reminderDateTime = new Date(`${date.value}T${time.value}`);
-                console.log(reminderDateTime);
-                console.log(new Date());
-
-
-                if (reminderDateTime > new Date()) {
-                    todoes.push({
-                        "id": id,
-                        "taskText": taskText,
-                        "done": false,
-                        "date": date.value,
-                        "time": time.value,
-                        "reminded": false
-                    });
-                    alert("the TODO was added successfully! ");
-                    localStorage.setItem("todoes", JSON.stringify(todoes));
-                    SpanMessage.style.display = "none";
-                    taskInput.value = "";
-                    scheduleReminder(taskText, reminderDateTime);
-
-                } else {
-                    alert("⚠️ date ,time must be in the future ");
-                }
-
-            }
-
-        }
-        showTodoes();
-
+    todoes.push({
+      id: Math.random(),
+      taskText,
+      date: date.value,
+      time: time.value,
+      done: false,
+      reminded: false,
     });
 
-    function showTodoes() {
-        taskTable.innerHTML = "";
-        todoes.forEach(todo => {
-            //starting creating elements
-            //table row
-            var row = document.createElement("tr");
-
-            // done cell
-            let doneCell = document.createElement("td");
-            let doneBox = document.createElement("input");
-            // task cell
-            var taskTextCell = document.createElement("td");
-            taskTextCell.innerText = todo.taskText;  //done    task   ?
-            //deadline cell
-            var deadlinecell = document.createElement("td");
-            deadlinecell.innerText = `${todo.date} , ${todo.time}`;  //done    task   ?
-
-            doneBox.type = "checkbox";
-
-            // doneBox.value=id;
-            if (todo["done"]) {
-                taskTextCell.className = "done";//will style the text to be line througth
-                doneBox.checked = true;
-            }
-            doneBox.addEventListener("change", function () {
-                todo["done"] = doneBox.checked;
-                if (todo["done"]) {
-                    taskTextCell.className = "done";
-                } else {
-                    taskTextCell.className = "active";
-                    todo["reminded"] = false; // إعادة التذكير إذا رجعت المهمة لحالة غير منتهية
-                }
-                localStorage.setItem("todoes", JSON.stringify(todoes));
-            });
-            doneCell.appendChild(doneBox);   //  done   ?   ?
-
-
-
-            // delete Button
-            var deleteCell = document.createElement("td");
-            var deleteBtn = document.createElement("button");
-            deleteBtn.innerText = "Delete";
-            deleteBtn.style = "background-color: red; color: white; padding: 5px 10px; border: none; border-radius: 5px;"
-            deleteBtn.addEventListener("click", function () {
-                // delete the compelete row
-                let deletetodo = confirm(`are you sure you want to delete ${todo["taskText"]} `);
-                if (deletetodo) {
-                    todoes = removeElement(todoes, todo);
-                    localStorage.setItem("todoes", JSON.stringify(todoes));
-                    taskTable.removeChild(row);
-                }
-            });
-            deleteCell.appendChild(deleteBtn);
-
-            // Append to row
-            row.appendChild(doneCell);
-            row.appendChild(taskTextCell);
-            row.appendChild(deadlinecell);
-            row.appendChild(deleteCell);
-
-            // Add row to table
-            taskTable.appendChild(row);
-        });
-    }
+    localStorage.setItem("todoes", JSON.stringify(todoes));
+    taskInput.value = "";
+    SpanMessage.style.display = "none";
     showTodoes();
-    checkDeadlinesPeriodically();
+    checkReminders();
+  });
 
+  // SHOW TODOES
+  function showTodoes() {
+    taskTable.innerHTML = "";
+    todoes.forEach(todo => {
+      const tr = document.createElement("tr");
 
-    function removeElement(a, ele) {
-        a.forEach((item, index) => {
-            if (item === ele) {
-                a.splice(index, 1);
-            }
-        });
-        return a;
-    }
+      // Done checkbox
+      const doneCell = document.createElement("td");
+      const doneBox = document.createElement("input");
+      doneBox.type = "checkbox";
+      doneBox.checked = todo.done;
+      doneBox.addEventListener("change", () => {
+        todo.done = doneBox.checked;
+        if (!todo.done) todo.reminded = false; // allow reminder again
+        localStorage.setItem("todoes", JSON.stringify(todoes));
+      });
+      doneCell.appendChild(doneBox);
+
+      // Task text
+      const taskTextCell = document.createElement("td");
+      taskTextCell.innerText = todo.taskText;
+      if (todo.done) taskTextCell.className = "done";
+
+      // Deadline
+      const deadlineCell = document.createElement("td");
+      deadlineCell.innerText = `${todo.date} ${todo.time}`;
+
+      // Delete button
+      const deleteCell = document.createElement("td");
+      const deleteBtn = document.createElement("button");
+      deleteBtn.innerText = "Delete";
+      deleteBtn.style =
+        "background-color:red;color:white;padding:5px 10px;border:none;border-radius:5px";
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`Delete "${todo.taskText}"?`)) {
+          todoes = todoes.filter(t => t.id !== todo.id);
+          localStorage.setItem("todoes", JSON.stringify(todoes));
+          showTodoes();
+        }
+      });
+      deleteCell.appendChild(deleteBtn);
+
+      tr.append(doneCell, taskTextCell, deadlineCell, deleteCell);
+      taskTable.appendChild(tr);
+    });
+  }
+
+  showTodoes();
+
+  // CHECK REMINDERS
+  function checkReminders() {
+    const now = new Date();
+    todoes.forEach(todo => {
+      if (!todo.done && !todo.reminded) {
+        const reminderTime = new Date(`${todo.date}T${todo.time}`);
+        if (reminderTime <= now) {
+          // Trigger notification
+          if (Notification.permission === "granted") {
+            new Notification("📝 Reminder!", {
+              body: `Don't forget: ${todo.taskText}`,
+              icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png",
+            });
+          }
+          todo.reminded = true;
+        }
+      }
+    });
+    localStorage.setItem("todoes", JSON.stringify(todoes));
+  }
+
+  // Run reminders when page loads
+  checkReminders();
+
+  // Optional: check when user comes back online
+  window.addEventListener("online", checkReminders);
 });
